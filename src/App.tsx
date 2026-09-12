@@ -158,6 +158,7 @@ function App() {
     return (
       <RevealScreen
         revealedCards={revealedCards}
+        category={category}
         spread={activeSpread}
         question={question}
         includeReversed={includeReversed}

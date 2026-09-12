@@ -1,13 +1,15 @@
 import { tarotCards } from '../data/tarotCards'
-import type { TarotSpread } from '../types/reading'
+import type { ReadingCategory, TarotSpread } from '../types/reading'
 import type { RevealedCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
 import { getReadingPosition } from '../utils/readingPosition'
+import { getPrimaryMeaningSections, getSecondaryMeaningSections } from '../utils/readingMeaning'
 
 const TAROT_CARD_BY_ID = new Map(tarotCards.map((card) => [card.id, card]))
 
 interface RevealScreenProps {
   revealedCards: readonly RevealedCard[]
+  category: ReadingCategory
   spread: TarotSpread | null
   question: string
   includeReversed: boolean
@@ -17,6 +19,7 @@ interface RevealScreenProps {
 
 export function RevealScreen({
   revealedCards,
+  category,
   spread,
   question,
   includeReversed,
@@ -57,6 +60,8 @@ export function RevealScreen({
           const isReversed = revealedCard.orientation === 'reversed'
           const orientationLabel = isReversed ? '역방향' : '정방향'
           const meaning = isReversed ? card.reversed : card.upright
+          const primarySections = getPrimaryMeaningSections(category, meaning, card.themes)
+          const secondarySections = getSecondaryMeaningSections(category, meaning, card.themes)
 
           return (
             <article key={revealedCard.deckIndex} className="revealed-card interpreted-card" aria-label={`${positionTitle}, ${card.nameKo}, ${orientationLabel}`}>
@@ -79,18 +84,26 @@ export function RevealScreen({
                 <span className="orientation-label">{orientationLabel}</span>
               </div>
               <div className="card-meaning">
+                <h4>핵심 키워드</h4>
                 <ul aria-label="핵심 키워드">{meaning.keywords.map((keyword) => <li key={keyword}>{keyword}</li>)}</ul>
-                <p>{meaning.summary}</p>
+                <section className="meaning-summary">
+                  <h4>{category === 'choice' ? '현재 흐름' : category === 'timeline' ? '기본 흐름' : '기본 해석'}</h4>
+                  <p>{meaning.summary}</p>
+                </section>
+                {primarySections.length > 0 && (
+                  <dl className="primary-meaning-sections">
+                    {primarySections.map((section) => (
+                      <div key={section.key}><dt>{section.label}</dt><dd>{section.value}</dd></div>
+                    ))}
+                  </dl>
+                )}
                 <p className="meaning-advice"><strong>조언</strong>{meaning.advice}</p>
                 <details className="meaning-details">
-                  <summary>상세 해석 보기</summary>
+                  <summary>다른 영역도 보기</summary>
                   <dl>
-                    <div><dt>연애</dt><dd>{meaning.love}</dd></div>
-                    <div><dt>관계</dt><dd>{meaning.relationship}</dd></div>
-                    <div><dt>직업</dt><dd>{meaning.career}</dd></div>
-                    <div><dt>금전</dt><dd>{meaning.money}</dd></div>
-                    <div><dt>조언</dt><dd>{meaning.advice}</dd></div>
-                    <div><dt>그림자</dt><dd>{meaning.shadow}</dd></div>
+                    {secondarySections.map((section) => (
+                      <div key={section.key}><dt>{section.label}</dt><dd>{section.value}</dd></div>
+                    ))}
                   </dl>
                 </details>
               </div>

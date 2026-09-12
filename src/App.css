@@ -1384,6 +1384,14 @@
   border-top: 1px solid rgba(217, 121, 63, 0.18);
 }
 
+.card-meaning h4,
+.primary-meaning-sections dt {
+  margin: 0 0 6px;
+  color: var(--color-copper);
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+}
+
 .card-meaning ul {
   display: flex;
   flex-wrap: wrap;
@@ -1400,6 +1408,27 @@
   color: var(--color-text-muted);
   font-size: 0.86rem;
   line-height: 1.7;
+}
+
+.meaning-summary {
+  margin-top: 16px;
+}
+
+.primary-meaning-sections {
+  margin: 18px 0 0;
+}
+
+.primary-meaning-sections div {
+  padding: 13px 0;
+  border-top: 1px solid rgba(217, 121, 63, 0.14);
+}
+
+.primary-meaning-sections dd {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 .result-actions {

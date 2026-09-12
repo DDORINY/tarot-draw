@@ -72,8 +72,17 @@ export interface TarotCard {
   themes: TarotThemes
 }
 
-export interface DrawnCard {
+export interface ShuffledCard {
   cardId: number
-  orientation: TarotOrientation
+  deckIndex: number
+}
+
+export interface SelectedCard {
+  cardId: number
+  deckIndex: number
   drawIndex: number
+}
+
+export interface RevealedCard extends SelectedCard {
+  orientation: TarotOrientation
 }

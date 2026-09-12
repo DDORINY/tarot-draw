@@ -38,6 +38,12 @@ export function SetupScreen(props: SetupScreenProps) {
         <span className="brand-rule" aria-hidden="true" />
         <p>한밤의 관측소</p>
         <h1>TAROT DRAW</h1>
+        <p className="guided-subtitle">질문을 떠올리고 마음이 가는 카드를 선택해 보세요.</p>
+        <div className="setup-eclipse" aria-hidden="true">
+          <span className="setup-eclipse-disc" />
+          <span className="setup-eclipse-ring" />
+          <i />
+        </div>
       </header>
 
       <div className="guided-layout">

@@ -2,7 +2,9 @@ import { useRef, useState } from 'react'
 import { RevealScreen } from './components/RevealScreen'
 import { SelectionScreen } from './components/SelectionScreen'
 import { SetupScreen } from './components/SetupScreen'
+import { getRecommendedSpreads, tarotSpreads } from './data/readingGuides'
 import { tarotCards } from './data/tarotCards'
+import type { ReadingCategory, TarotSpread } from './types/reading'
 import type { RevealedCard, SelectedCard, ShuffledCard } from './types/tarot'
 import { getRandomOrientation } from './utils/orientation'
 import { createShuffledDeck, selectCardFromDeck } from './utils/tarotDeck'
@@ -17,6 +19,10 @@ type ReadingStage = 'setup' | 'selecting' | 'revealed'
 
 function App() {
   const [stage, setStage] = useState<ReadingStage>('setup')
+  const [category, setCategory] = useState<ReadingCategory>('daily')
+  const [question, setQuestion] = useState('')
+  const [selectedSpreadId, setSelectedSpreadId] = useState('one-card-message')
+  const [activeSpread, setActiveSpread] = useState<TarotSpread | null>(null)
   const [drawCount, setDrawCount] = useState(3)
   const [drawCountInput, setDrawCountInput] = useState('3')
   const [validationMessage, setValidationMessage] = useState('')
@@ -50,18 +56,23 @@ function App() {
     return nextDrawCount
   }
 
-  const selectPreset = (preset: number) => {
-    setDrawCount(preset)
-    setDrawCountInput(String(preset))
+  const changeCategory = (nextCategory: ReadingCategory) => {
+    setCategory(nextCategory)
+    setQuestion('')
     setValidationMessage('')
+    const recommended = getRecommendedSpreads(nextCategory)
+    setSelectedSpreadId(recommended[0]?.id ?? '')
   }
 
   const startReading = () => {
-    const nextDrawCount = commitDrawCount(drawCountInput)
+    const spread = tarotSpreads.find((item) => item.id === selectedSpreadId)
+    const nextDrawCount =
+      category === 'free' ? commitDrawCount(drawCountInput) : spread?.cardCount
 
-    if (nextDrawCount === null) return
+    if (nextDrawCount === null || nextDrawCount === undefined) return
 
     setDrawCount(nextDrawCount)
+    setActiveSpread(category === 'free' ? null : spread ?? null)
     setShuffledDeck(createShuffledDeck(tarotCards.map((card) => card.id)))
     setSelectedCards([])
     setRevealedCards([])
@@ -89,9 +100,7 @@ function App() {
       stage !== 'selecting' ||
       selectedCards.length !== drawCount ||
       hasRevealedRef.current
-    ) {
-      return
-    }
+    ) return
 
     hasRevealedRef.current = true
     setRevealedCards(
@@ -111,8 +120,41 @@ function App() {
     setStage('setup')
   }
 
+  const redrawSameQuestion = () => {
+    setShuffledDeck(createShuffledDeck(tarotCards.map((card) => card.id)))
+    setSelectedCards([])
+    setRevealedCards([])
+    hasRevealedRef.current = false
+    setStage('selecting')
+  }
+
+  const startNewReading = () => {
+    setCategory('daily')
+    setQuestion('')
+    setSelectedSpreadId('one-card-message')
+    setActiveSpread(null)
+    setDrawCount(3)
+    setDrawCountInput('3')
+    setValidationMessage('')
+    setIncludeReversed(true)
+    setShuffledDeck([])
+    setSelectedCards([])
+    setRevealedCards([])
+    hasRevealedRef.current = false
+    setStage('setup')
+  }
+
   if (stage === 'revealed') {
-    return <RevealScreen revealedCards={revealedCards} onReset={resetReading} />
+    return (
+      <RevealScreen
+        revealedCards={revealedCards}
+        spread={activeSpread}
+        question={question}
+        includeReversed={includeReversed}
+        onRedraw={redrawSameQuestion}
+        onNewReading={startNewReading}
+      />
+    )
   }
 
   if (stage === 'selecting') {
@@ -121,6 +163,8 @@ function App() {
         deck={shuffledDeck}
         selectedCards={selectedCards}
         drawCount={drawCount}
+        spread={activeSpread}
+        question={question}
         onSelect={selectCard}
         onReveal={revealSelection}
         onReset={resetReading}
@@ -130,6 +174,9 @@ function App() {
 
   return (
     <SetupScreen
+      category={category}
+      question={question}
+      selectedSpreadId={selectedSpreadId}
       presets={DRAW_COUNT_PRESETS}
       drawCount={drawCount}
       drawCountInput={drawCountInput}
@@ -137,7 +184,14 @@ function App() {
       maxDrawCount={MAX_DRAW_COUNT}
       validationMessage={validationMessage}
       includeReversed={includeReversed}
-      onPresetSelect={selectPreset}
+      onCategoryChange={changeCategory}
+      onQuestionChange={setQuestion}
+      onSpreadChange={setSelectedSpreadId}
+      onPresetSelect={(preset) => {
+        setDrawCount(preset)
+        setDrawCountInput(String(preset))
+        setValidationMessage('')
+      }}
       onInputChange={(value) => {
         setDrawCountInput(value)
         setValidationMessage('')

@@ -41,10 +41,6 @@ export function RevealScreen({
           <h1>당신이 선택한 카드</h1>
           <p>카드는 단독 의미뿐 아니라 뽑힌 자리와 주변 카드의 흐름을 함께 참고해 보세요.</p>
         </div>
-        <div className="result-actions">
-          <button type="button" className="text-button" onClick={onRedraw}>같은 질문으로 다시 뽑기</button>
-          <button type="button" className="text-button" onClick={onNewReading}>새 리딩</button>
-        </div>
       </header>
 
       <section className="reading-summary" aria-label="리딩 요약">
@@ -53,8 +49,6 @@ export function RevealScreen({
         <div><span>카드 수</span><strong>{revealedCards.length}장</strong></div>
         <div><span>역방향</span><strong>{includeReversed ? '포함' : '포함하지 않음'}</strong></div>
       </section>
-
-      <ReadingSummaryPanel summary={readingSummary} />
 
       <section className="revealed-grid interpreted-grid" data-count={Math.min(orderedCards.length, 4)} aria-label="공개된 타로 카드">
         {orderedCards.map((revealedCard) => {
@@ -118,6 +112,13 @@ export function RevealScreen({
           )
         })}
       </section>
+
+      <ReadingSummaryPanel summary={readingSummary} />
+
+      <footer className="result-actions result-actions--footer">
+        <button type="button" className="text-button" onClick={onRedraw}>같은 질문으로 다시 뽑기</button>
+        <button type="button" className="primary-button" onClick={onNewReading}>새 리딩 <span aria-hidden="true">→</span></button>
+      </footer>
     </main>
   )
 }

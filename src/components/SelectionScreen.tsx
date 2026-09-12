@@ -91,8 +91,11 @@ export function SelectionScreen({
 
       <footer className="selection-toolbar">
         <button type="button" className="text-button" onClick={onReset}>처음부터</button>
+        <span className="selection-toolbar-progress" aria-hidden="true">
+          {selectedCards.length} / {drawCount}
+        </span>
         <button type="button" className="primary-button reveal-button" disabled={!isComplete} onClick={onReveal}>
-          선택한 카드 공개 <span aria-hidden="true">→</span>
+          카드 공개하기 <span aria-hidden="true">→</span>
         </button>
       </footer>
     </main>

@@ -1,15 +1,35 @@
-import type { ReadingSummary } from '../utils/readingSummary'
+import type { ReadingFlowSummary, ReadingSummary } from '../utils/readingSummary'
 
 const SUIT_LABELS = { wands: '완드', cups: '컵', swords: '소드', pentacles: '펜타클' } as const
 
-export function ReadingSummaryPanel({ summary }: { summary: ReadingSummary }) {
+export function ReadingSummaryPanel({ summary, flow }: { summary: ReadingSummary; flow: ReadingFlowSummary }) {
   const suits = Object.entries(summary.suitCounts)
     .filter(([, count]) => count > 0) as Array<[keyof typeof SUIT_LABELS, number]>
 
   return (
     <section className="reading-flow" aria-labelledby="reading-flow-title">
       <header><p className="section-index">종합 요약</p><h2 id="reading-flow-title">전체 리딩 흐름</h2></header>
-      <div className="reading-flow-grid">
+      <div className="reading-flow-context">
+        <p className="reading-flow-topic"><span>주제</span><strong>{flow.title}</strong></p>
+        <p className="reading-flow-intro">{flow.intro}</p>
+      </div>
+      <div className="reading-flow-layout">
+        <div className="reading-flow-narrative">
+          {flow.sections.length > 0 && (
+            <section>
+              <h3>핵심 흐름</h3>
+              <dl>{flow.sections.map((section) => <div key={section.label}><dt>{section.label}</dt><dd>{section.text}</dd></div>)}</dl>
+            </section>
+          )}
+          {flow.extraSections.length > 0 && (
+            <section>
+              <h3>추가로 나온 카드</h3>
+              <dl>{flow.extraSections.map((section) => <div key={section.label}><dt>{section.label}</dt><dd>{section.text}</dd></div>)}</dl>
+            </section>
+          )}
+          {flow.closing && <section className="reading-flow-closing"><h3>조언</h3><p>{flow.closing}</p></section>}
+        </div>
+        <div className="reading-flow-grid">
         <section><h3>주요 키워드</h3><p className="summary-keywords">{summary.topKeywords.join(' · ')}</p></section>
         <section>
           <h3>카드 구성</h3>
@@ -24,6 +44,7 @@ export function ReadingSummaryPanel({ summary }: { summary: ReadingSummary }) {
         {summary.observations.length > 0 && (
           <section><h3>눈여겨볼 흐름</h3><ul className="summary-observations">{summary.observations.map((item) => <li key={item}>{item}</li>)}</ul></section>
         )}
+        </div>
       </div>
     </section>
   )

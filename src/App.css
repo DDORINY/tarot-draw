@@ -2383,3 +2383,103 @@
 @media (prefers-reduced-motion: reduce) {
   .selection-screen .deck-card { filter: none; }
 }
+
+/* Topic-aware Reading Flow Summary */
+.reading-flow-context {
+  max-width: 720px;
+  margin-bottom: 34px;
+}
+
+.reading-flow-topic span,
+.reading-flow-topic strong {
+  display: block;
+}
+
+.reading-flow-topic span,
+.reading-flow-narrative h3 {
+  color: var(--color-copper);
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+}
+
+.reading-flow-topic strong {
+  margin-top: 5px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.reading-flow-intro {
+  margin: 14px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.reading-flow-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: clamp(42px, 6vw, 78px);
+}
+
+.reading-flow-narrative {
+  min-width: 0;
+}
+
+.reading-flow-narrative > section + section {
+  margin-top: 30px;
+}
+
+.reading-flow-narrative h3 {
+  margin: 0 0 13px;
+}
+
+.reading-flow-narrative dl {
+  margin: 0;
+}
+
+.reading-flow-narrative dl div {
+  padding: 14px 0;
+  border-top: 1px solid rgba(240, 232, 222, 0.08);
+}
+
+.reading-flow-narrative dt {
+  margin-bottom: 6px;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.reading-flow-narrative dd,
+.reading-flow-closing p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.reading-flow-closing {
+  padding-left: 14px;
+  border-left: 1px solid var(--color-copper);
+}
+
+.reading-flow-layout > .reading-flow-grid {
+  grid-template-columns: 1fr;
+  align-content: start;
+}
+
+@media (max-width: 767px) {
+  .reading-flow-context {
+    margin-bottom: 28px;
+  }
+
+  .reading-flow-layout {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .reading-flow-narrative dl div {
+    padding-block: 12px;
+  }
+}

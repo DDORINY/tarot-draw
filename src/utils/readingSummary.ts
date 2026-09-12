@@ -1,4 +1,4 @@
-import type { ReadingCategory } from '../types/reading'
+import type { ReadingCategory, TarotSpread } from '../types/reading'
 import type { RevealedCard, TarotCard, TarotSuit } from '../types/tarot'
 
 type MinorSuit = Exclude<TarotSuit, 'major'>
@@ -16,6 +16,146 @@ export interface ReadingSummary {
   majorRatio: number
   reversedRatio: number
   observations: string[]
+}
+
+export interface ReadingFlowSection {
+  label: string
+  text: string
+}
+
+export interface ReadingFlowSummary {
+  title: string
+  intro: string
+  sections: ReadingFlowSection[]
+  extraSections: ReadingFlowSection[]
+  closing?: string
+}
+
+type FlowField =
+  | 'summary'
+  | 'love'
+  | 'career'
+  | 'money'
+  | 'relationship'
+  | 'advice'
+  | 'shadow'
+  | 'emotion'
+  | 'action'
+  | 'subconscious'
+  | 'outcome'
+
+const FLOW_INTROS: Record<ReadingCategory, { title: string; intro: string }> = {
+  'inner-feelings': {
+    title: '상대의 속마음',
+    intro: '겉으로 드러나는 태도와 내면의 감정, 관계에 대한 의도와 행동 가능성을 순서대로 살펴봅니다.',
+  },
+  love: {
+    title: '연애 · 관계',
+    intro: '감정과 관계의 흐름, 주의할 점과 앞으로의 가능성을 중심으로 살펴봅니다.',
+  },
+  money: {
+    title: '금전운',
+    intro: '현재 금전 흐름과 도움·방해 요소, 주의점과 앞으로의 가능성을 중심으로 살펴봅니다.',
+  },
+  career: {
+    title: '직업 · 이직',
+    intro: '현재 직업 상황과 강점, 장애물, 기회와 향후 방향을 중심으로 살펴봅니다.',
+  },
+  timeline: {
+    title: '과거 · 현재 · 미래',
+    intro: '과거의 배경에서 현재의 흐름을 거쳐 앞으로 이어질 가능성을 순서대로 살펴봅니다.',
+  },
+  choice: {
+    title: '선택 · 고민',
+    intro: '현재 상황과 각 선택의 흐름, 선택할 때 고려할 점을 나란히 살펴봅니다.',
+  },
+  daily: {
+    title: '오늘의 메시지',
+    intro: '오늘 눈여겨볼 핵심 흐름과 필요한 태도를 간결하게 살펴봅니다.',
+  },
+  self: {
+    title: '나 자신 · 내면',
+    intro: '현재 감정과 의식, 무의식의 패턴과 필요한 태도를 차분히 살펴봅니다.',
+  },
+  free: {
+    title: '자유 리딩',
+    intro: '선택한 카드의 주요 키워드와 전체적인 구성을 중심으로 살펴봅니다.',
+  },
+}
+
+const FLOW_FIELDS: Record<ReadingCategory, readonly FlowField[]> = {
+  'inner-feelings': ['relationship', 'love', 'shadow', 'relationship', 'action'],
+  love: ['love', 'relationship', 'shadow', 'advice', 'outcome'],
+  money: ['money', 'money', 'shadow', 'shadow', 'outcome'],
+  career: ['career', 'advice', 'shadow', 'action', 'outcome'],
+  timeline: ['summary', 'summary', 'outcome'],
+  choice: ['summary', 'summary', 'shadow', 'summary', 'shadow'],
+  daily: ['summary', 'summary', 'advice'],
+  self: ['emotion', 'summary', 'subconscious', 'shadow', 'advice'],
+  free: [],
+}
+
+function getFlowText(card: TarotCard, orientation: RevealedCard['orientation'], field: FlowField): string {
+  const meaning = orientation === 'upright' ? card.upright : card.reversed
+
+  if (field === 'emotion' || field === 'action' || field === 'subconscious' || field === 'outcome') {
+    return card.themes[field]
+  }
+
+  return meaning[field]
+}
+
+export function createReadingFlowSummary({
+  category,
+  spread,
+  revealedCards,
+  cards,
+}: {
+  category: ReadingCategory
+  spread: TarotSpread | null
+  revealedCards: readonly RevealedCard[]
+  cards: readonly TarotCard[]
+}): ReadingFlowSummary {
+  const cardsById = new Map(cards.map((card) => [card.id, card]))
+  const orderedCards = [...revealedCards].sort((a, b) => a.drawIndex - b.drawIndex)
+  const guideLength = spread?.positions.length ?? 0
+  const sections: ReadingFlowSection[] = []
+  const extraSections: ReadingFlowSection[] = []
+
+  if (category !== 'free') {
+    for (const revealedCard of orderedCards) {
+      const card = cardsById.get(revealedCard.cardId)
+      if (!card) continue
+
+      if (spread && revealedCard.drawIndex >= guideLength) {
+        extraSections.push({
+          label: `추가 카드 ${revealedCard.drawIndex - guideLength + 1}`,
+          text: getFlowText(card, revealedCard.orientation, 'summary'),
+        })
+        continue
+      }
+
+      const fieldOrder = FLOW_FIELDS[category]
+      const field = fieldOrder[revealedCard.drawIndex] ?? fieldOrder.at(-1) ?? 'summary'
+      sections.push({
+        label: spread?.positions[revealedCard.drawIndex]?.title ?? `${revealedCard.drawIndex + 1}번째 카드`,
+        text: getFlowText(card, revealedCard.orientation, field),
+      })
+    }
+  }
+
+  const firstRevealed = orderedCards[0]
+  const firstCard = firstRevealed ? cardsById.get(firstRevealed.cardId) : undefined
+  const closing = firstCard && firstRevealed
+    ? getFlowText(firstCard, firstRevealed.orientation, 'advice')
+    : undefined
+
+  return {
+    ...FLOW_INTROS[category],
+    sections,
+    extraSections,
+    closing,
+  }
 }
 
 const SUITS: readonly MinorSuit[] = ['wands', 'cups', 'swords', 'pentacles']

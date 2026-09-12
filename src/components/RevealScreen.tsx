@@ -5,7 +5,7 @@ import type { ReadingCategory, TarotSpread } from '../types/reading'
 import type { RevealedCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
 import { getReadingPosition } from '../utils/readingPosition'
-import { createReadingSummary } from '../utils/readingSummary'
+import { createReadingFlowSummary, createReadingSummary } from '../utils/readingSummary'
 import { getPrimaryMeaningSections, getSecondaryMeaningSections } from '../utils/readingMeaning'
 
 const TAROT_CARD_BY_ID = new Map(tarotCards.map((card) => [card.id, card]))
@@ -31,6 +31,7 @@ export function RevealScreen({
 }: RevealScreenProps) {
   const orderedCards = [...revealedCards].sort((a, b) => a.drawIndex - b.drawIndex)
   const readingSummary = createReadingSummary(revealedCards, tarotCards, category, includeReversed)
+  const readingFlow = createReadingFlowSummary({ category, spread, revealedCards, cards: tarotCards })
 
   return (
     <main className="app-shell reveal-screen">
@@ -113,7 +114,7 @@ export function RevealScreen({
         })}
       </section>
 
-      <ReadingSummaryPanel summary={readingSummary} />
+      <ReadingSummaryPanel summary={readingSummary} flow={readingFlow} />
 
       <footer className="result-actions result-actions--footer">
         <button type="button" className="text-button" onClick={onRedraw}>같은 질문으로 다시 뽑기</button>

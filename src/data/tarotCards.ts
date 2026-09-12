@@ -751,7 +751,10 @@ const majorCards: TarotCard[] = majorArcana.map((card) => {
     arcana: 'major',
     suit: 'major',
     number: card.number,
-    image: `/cards/major/${card.slug}.webp`,
+    image:
+      card.number === 20
+        ? '/cards/major/20-judgement.webp'
+        : `/cards/major/${card.slug}.webp`,
     element: card.element as TarotElement,
     astrology: card.astrology,
     planet: card.planet,

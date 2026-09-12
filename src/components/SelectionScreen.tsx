@@ -1,5 +1,6 @@
 import type { TarotSpread } from '../types/reading'
 import type { SelectedCard, ShuffledCard } from '../types/tarot'
+import { withBasePath } from '../utils/assetPath'
 
 interface SelectionScreenProps {
   deck: readonly ShuffledCard[]
@@ -77,7 +78,7 @@ export function SelectionScreen({
                 onClick={() => onSelect(deckIndex)}
               >
                 <span className="card-back-fallback" aria-hidden="true"><i /></span>
-                <img src="/cards/back.webp" alt="" aria-hidden="true" decoding="async" draggable={false} onError={(event) => { event.currentTarget.hidden = true }} />
+                <img src={withBasePath('/cards/back.webp')} alt="" aria-hidden="true" decoding="async" draggable={false} onError={(event) => { event.currentTarget.hidden = true }} />
                 {isSelected && <span className="selection-order" aria-hidden="true">{String(order).padStart(2, '0')}</span>}
               </button>
             )

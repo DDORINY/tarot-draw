@@ -1,6 +1,7 @@
 import { tarotCards } from '../data/tarotCards'
 import type { TarotSpread } from '../types/reading'
 import type { RevealedCard } from '../types/tarot'
+import { withBasePath } from '../utils/assetPath'
 
 const TAROT_CARD_BY_ID = new Map(tarotCards.map((card) => [card.id, card]))
 
@@ -67,7 +68,7 @@ export function RevealScreen({
                 <div className="reveal-front">
                   <div className="revealed-image-frame">
                     <div className="face-fallback"><strong>{card.nameKo}</strong><span>이미지 준비 중</span></div>
-                    <img className={isReversed ? 'card-image--reversed' : ''} src={card.image} alt={`${card.nameKo}, ${orientationLabel}`} loading="lazy" decoding="async" draggable={false} onError={(event) => { event.currentTarget.hidden = true }} />
+                    <img className={isReversed ? 'card-image--reversed' : ''} src={withBasePath(card.image)} alt={`${card.nameKo}, ${orientationLabel}`} loading="lazy" decoding="async" draggable={false} onError={(event) => { event.currentTarget.hidden = true }} />
                   </div>
                 </div>
               </div>

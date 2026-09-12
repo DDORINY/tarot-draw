@@ -1,6 +1,7 @@
 import { getRecommendedSpreads, readingCategories } from '../data/readingGuides'
 import type { ReadingCategory } from '../types/reading'
 import type { DrawCountMode } from '../App'
+import { CelestialBackdrop } from './CelestialBackdrop'
 
 interface SetupScreenProps {
   category: ReadingCategory
@@ -32,6 +33,7 @@ export function SetupScreen(props: SetupScreenProps) {
 
   return (
     <main className="app-shell guided-setup">
+      <CelestialBackdrop variant="setup" />
       <header className="brand-lockup guided-brand">
         <span className="brand-rule" aria-hidden="true" />
         <p>한밤의 관측소</p>

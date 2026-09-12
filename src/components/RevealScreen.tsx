@@ -1,5 +1,6 @@
 import { tarotCards } from '../data/tarotCards'
 import { ReadingSummaryPanel } from './ReadingSummaryPanel'
+import { CelestialBackdrop } from './CelestialBackdrop'
 import type { ReadingCategory, TarotSpread } from '../types/reading'
 import type { RevealedCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
@@ -33,6 +34,7 @@ export function RevealScreen({
 
   return (
     <main className="app-shell reveal-screen">
+      <CelestialBackdrop variant="reveal" />
       <header className="screen-header reveal-header">
         <div>
           <p className="section-index">리딩 결과</p>

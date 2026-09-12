@@ -2,6 +2,7 @@ import type { TarotSpread } from '../types/reading'
 import type { SelectedCard, ShuffledCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
 import { getReadingPosition } from '../utils/readingPosition'
+import { CelestialBackdrop } from './CelestialBackdrop'
 
 interface SelectionScreenProps {
   deck: readonly ShuffledCard[]
@@ -38,6 +39,7 @@ export function SelectionScreen({
 
   return (
     <main className="app-shell selection-screen">
+      <CelestialBackdrop variant="selection" />
       <header className="screen-header selection-header">
         <div>
           <p className="section-index">카드 선택</p>

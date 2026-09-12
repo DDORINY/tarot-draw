@@ -8,6 +8,7 @@
   background: var(--color-bg);
 }
 
+
 .app-shell::before,
 .app-shell::after {
   content: '';
@@ -1648,4 +1649,167 @@
     flex-direction: column;
     gap: 5px;
   }
+}
+
+/* Dreamy Celestial Redesign */
+.app-shell {
+  --color-night-deep: #041216;
+  --color-night-soft: #0d282d;
+  --color-orbit: rgba(240, 232, 222, 0.22);
+  --color-orbit-soft: rgba(217, 121, 63, 0.12);
+  --color-star-soft: rgba(240, 232, 222, 0.58);
+  isolation: isolate;
+  overflow: clip;
+}
+
+.celestial-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  color: var(--color-orbit);
+  pointer-events: none;
+}
+
+.celestial-backdrop svg {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  min-height: 680px;
+  overflow: visible;
+}
+
+.celestial-orbit {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: celestial-turn 36s linear infinite;
+}
+
+.celestial-orbit--secondary {
+  color: var(--color-orbit-soft);
+  stroke-dasharray: 2 11;
+  animation-duration: 29s;
+  animation-direction: reverse;
+}
+
+.celestial-node {
+  fill: var(--color-bg);
+  stroke: var(--color-copper);
+  stroke-width: 1;
+}
+
+.celestial-star {
+  fill: none;
+  stroke: var(--color-star-soft);
+  stroke-width: 1;
+  animation: celestial-breathe 7s ease-in-out infinite alternate;
+}
+
+.celestial-star--two { animation-delay: -2.4s; }
+.celestial-star--three { animation-delay: -4.8s; }
+.celestial-dot { fill: var(--color-star-soft); }
+.celestial-backdrop--setup .celestial-orbit--primary { transform: rotate(-8deg); }
+.celestial-backdrop--selection .celestial-orbit--primary { transform: rotate(4deg) scale(1.08); }
+.celestial-backdrop--selection .celestial-orbit--secondary { transform: translate(720px, -100px); }
+.celestial-backdrop--reveal .celestial-orbit--primary { transform: translate(-120px, 120px) rotate(-5deg); }
+.celestial-backdrop--reveal .celestial-star--two { display: none; }
+
+.guided-brand { margin-bottom: 104px; }
+.guided-brand::after {
+  content: '';
+  display: block;
+  width: min(38vw, 360px);
+  height: 44px;
+  margin: 34px auto -18px;
+  border-top: 1px solid var(--color-orbit);
+  border-radius: 50%;
+}
+
+.guided-brand h1 {
+  font-size: clamp(2rem, 5vw, 4.6rem);
+  letter-spacing: 0.22em;
+}
+
+.guide-section {
+  position: relative;
+  padding-block: 58px;
+  animation: editorial-arrival 520ms ease-out both;
+}
+
+.guide-section:nth-child(2) { animation-delay: 80ms; }
+.guide-section:nth-child(3) { animation-delay: 160ms; }
+.guide-section:nth-child(4) { animation-delay: 240ms; }
+.category-button:hover { translate: 0 -2px; }
+
+.position-guide { padding: 30px 20px 34px; }
+.position-guide::after {
+  content: '';
+  display: block;
+  width: min(64%, 360px);
+  height: 18px;
+  margin: 20px auto -18px;
+  border-top: 1px solid var(--color-orbit);
+  border-radius: 50%;
+}
+
+.interpreted-card {
+  padding: 14px;
+  border-inline: 1px solid rgba(240, 232, 222, 0.07);
+}
+
+.interpreted-card:nth-child(even) { margin-top: clamp(0px, 3vw, 42px); }
+
+.reading-flow {
+  background: transparent;
+}
+
+.reading-flow::before,
+.reading-flow::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.reading-flow::before {
+  top: -8px;
+  right: 8%;
+  width: 17px;
+  height: 17px;
+  border: 1px solid var(--color-copper);
+  border-radius: 50%;
+}
+
+.reading-flow::after {
+  right: calc(8% + 8px);
+  bottom: -20px;
+  width: 1px;
+  height: 40px;
+  background: var(--color-orbit);
+}
+
+@keyframes celestial-turn { to { rotate: 360deg; } }
+@keyframes celestial-breathe { from { opacity: 0.38; } to { opacity: 0.7; } }
+@keyframes editorial-arrival {
+  from { opacity: 0; translate: 0 12px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (max-width: 767px) {
+  .guided-brand { margin-bottom: 44px; }
+  .celestial-backdrop svg { min-height: 560px; opacity: 0.62; }
+  .celestial-orbit--secondary,
+  .celestial-star--three,
+  .celestial-dot--two { display: none; }
+  .interpreted-card:nth-child(even) { margin-top: 0; }
+  .interpreted-card { padding-inline: 0; border-inline: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celestial-orbit,
+  .celestial-star,
+  .guide-section { animation: none; }
 }

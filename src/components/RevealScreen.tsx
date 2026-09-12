@@ -1,8 +1,10 @@
 import { tarotCards } from '../data/tarotCards'
+import { ReadingSummaryPanel } from './ReadingSummaryPanel'
 import type { ReadingCategory, TarotSpread } from '../types/reading'
 import type { RevealedCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
 import { getReadingPosition } from '../utils/readingPosition'
+import { createReadingSummary } from '../utils/readingSummary'
 import { getPrimaryMeaningSections, getSecondaryMeaningSections } from '../utils/readingMeaning'
 
 const TAROT_CARD_BY_ID = new Map(tarotCards.map((card) => [card.id, card]))
@@ -27,6 +29,7 @@ export function RevealScreen({
   onNewReading,
 }: RevealScreenProps) {
   const orderedCards = [...revealedCards].sort((a, b) => a.drawIndex - b.drawIndex)
+  const readingSummary = createReadingSummary(revealedCards, tarotCards, category, includeReversed)
 
   return (
     <main className="app-shell reveal-screen">
@@ -48,6 +51,8 @@ export function RevealScreen({
         <div><span>카드 수</span><strong>{revealedCards.length}장</strong></div>
         <div><span>역방향</span><strong>{includeReversed ? '포함' : '포함하지 않음'}</strong></div>
       </section>
+
+      <ReadingSummaryPanel summary={readingSummary} />
 
       <section className="revealed-grid interpreted-grid" data-count={Math.min(orderedCards.length, 4)} aria-label="공개된 타로 카드">
         {orderedCards.map((revealedCard) => {

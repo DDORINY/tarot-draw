@@ -2,6 +2,7 @@ import { tarotCards } from '../data/tarotCards'
 import type { TarotSpread } from '../types/reading'
 import type { RevealedCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
+import { getReadingPosition } from '../utils/readingPosition'
 
 const TAROT_CARD_BY_ID = new Map(tarotCards.map((card) => [card.id, card]))
 
@@ -28,7 +29,7 @@ export function RevealScreen({
     <main className="app-shell reveal-screen">
       <header className="screen-header reveal-header">
         <div>
-          <p className="section-index">The Reveal</p>
+          <p className="section-index">리딩 결과</p>
           <h1>당신이 선택한 카드</h1>
           <p>카드는 단독 의미뿐 아니라 뽑힌 자리와 주변 카드의 흐름을 함께 참고해 보세요.</p>
         </div>
@@ -40,7 +41,7 @@ export function RevealScreen({
 
       <section className="reading-summary" aria-label="리딩 요약">
         {question && <div><span>질문</span><strong>{question}</strong></div>}
-        <div><span>스프레드</span><strong>{spread ? `${spread.name} · ${spread.cardCount}장` : `자유 리딩 · ${revealedCards.length}장`}</strong></div>
+        <div><span>카드 배열</span><strong>{spread ? `${spread.name} · ${revealedCards.length}장` : `자유 리딩 · ${revealedCards.length}장`}</strong></div>
         <div><span>카드 수</span><strong>{revealedCards.length}장</strong></div>
         <div><span>역방향</span><strong>{includeReversed ? '포함' : '포함하지 않음'}</strong></div>
       </section>
@@ -50,9 +51,9 @@ export function RevealScreen({
           const card = TAROT_CARD_BY_ID.get(revealedCard.cardId)
           if (!card) return null
 
-          const position = spread?.positions[revealedCard.drawIndex]
-          const positionTitle = position?.title ?? `${revealedCard.drawIndex + 1}번째 카드`
-          const positionDescription = position?.description ?? '자유 리딩에서 선택한 순서'
+          const position = getReadingPosition(spread, revealedCard.drawIndex)
+          const positionTitle = position.title
+          const positionDescription = position.description
           const isReversed = revealedCard.orientation === 'reversed'
           const orientationLabel = isReversed ? '역방향' : '정방향'
           const meaning = isReversed ? card.reversed : card.upright
@@ -60,7 +61,7 @@ export function RevealScreen({
           return (
             <article key={revealedCard.deckIndex} className="revealed-card interpreted-card" aria-label={`${positionTitle}, ${card.nameKo}, ${orientationLabel}`}>
               <header className="position-result">
-                <p>{String(revealedCard.drawIndex + 1).padStart(2, '0')} · Position</p>
+                <p>{String(revealedCard.drawIndex + 1).padStart(2, '0')} · 카드 위치</p>
                 <h2>{positionTitle}</h2>
                 <span>{positionDescription}</span>
               </header>

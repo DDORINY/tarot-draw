@@ -97,7 +97,7 @@ export const readingCategories: readonly ReadingCategoryInfo[] = [
   },
   {
     id: 'free',
-    label: '자유 질문',
+    label: '자유 리딩',
     description: '정해진 형식 없이 질문과 카드 장수를 직접 정하는 자유 리딩입니다.',
     questions: [],
   },
@@ -148,17 +148,17 @@ export const tarotSpreads: readonly TarotSpread[] = [
     ],
   },
   {
-    id: 'money-five', category: 'money', name: '금전운',
+    id: 'money-five', category: 'money', name: '금전운 리딩',
     description: '현재 재정 흐름의 도움과 방해 요소를 함께 살펴봅니다.', cardCount: 5, difficulty: 'intermediate',
     positions: ['현재 금전 흐름', '도움이 되는 요소', '방해 요소', '주의할 점', '앞으로의 가능성'].map((title) => ({ title, description: `${title}에 해당하는 흐름` })),
   },
   {
-    id: 'career-five', category: 'career', name: '직업 · 이직',
+    id: 'career-five', category: 'career', name: '직업 · 이직 리딩',
     description: '직업적 강점과 장애물, 기회를 통해 다음 방향을 살펴봅니다.', cardCount: 5, difficulty: 'intermediate',
     positions: ['현재 직업 상황', '나의 강점', '장애물', '기회', '조언 및 향후 흐름'].map((title) => ({ title, description: `${title}에 해당하는 흐름` })),
   },
   {
-    id: 'choice-five', category: 'choice', name: 'A / B 선택',
+    id: 'choice-five', category: 'choice', name: 'A / B 선택 리딩',
     description: '두 선택지의 가능성과 각각 고려할 점을 나란히 비교합니다.', cardCount: 5, difficulty: 'intermediate',
     positions: ['현재 상황', 'A 선택의 흐름', 'A에서 고려할 점', 'B 선택의 흐름', 'B에서 고려할 점'].map((title) => ({ title, description: `${title}을 타로 관점에서 살펴보는 자리` })),
   },

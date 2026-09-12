@@ -1173,6 +1173,66 @@
   color: var(--color-text-muted);
 }
 
+.draw-count-panel {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(217, 121, 63, 0.18);
+}
+
+.draw-count-panel h3 {
+  margin: 0 0 18px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.draw-count-panel > p {
+  color: var(--color-text-muted);
+}
+
+.draw-count-modes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.draw-count-modes button {
+  min-height: 84px;
+  padding: 16px 18px;
+  border: 1px solid rgba(217, 121, 63, 0.2);
+  color: var(--color-text-muted);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.draw-count-modes button[aria-checked='true'] {
+  border-color: var(--color-border-strong);
+  background: var(--color-copper-soft);
+}
+
+.draw-count-modes strong,
+.draw-count-modes span {
+  display: block;
+}
+
+.draw-count-modes strong {
+  margin-bottom: 5px;
+  color: var(--color-text);
+}
+
+.draw-count-modes span {
+  font-size: 0.78rem;
+}
+
+.custom-count-controls {
+  margin-top: 24px;
+}
+
+.custom-count-controls .preset-list {
+  grid-template-columns: repeat(5, minmax(48px, 1fr));
+}
+
 .free-count-input {
   max-width: 260px;
 }
@@ -1434,6 +1494,7 @@
 
   .question-suggestions,
   .spread-list,
+  .draw-count-modes,
   .start-section,
   .reading-summary {
     grid-template-columns: 1fr;
@@ -1451,6 +1512,10 @@
 
   .spread-option {
     min-height: 0;
+  }
+
+  .custom-count-controls .preset-list {
+    grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
   }
 
   .start-section {

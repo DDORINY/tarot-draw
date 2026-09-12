@@ -1,6 +1,7 @@
 import type { TarotSpread } from '../types/reading'
 import type { SelectedCard, ShuffledCard } from '../types/tarot'
 import { withBasePath } from '../utils/assetPath'
+import { getReadingPosition } from '../utils/readingPosition'
 
 interface SelectionScreenProps {
   deck: readonly ShuffledCard[]
@@ -27,19 +28,19 @@ export function SelectionScreen({
   const selectionOrder = new Map(
     selectedCards.map((card) => [card.deckIndex, card.drawIndex + 1]),
   )
-  const nextPosition = spread?.positions[selectedCards.length]
+  const nextPosition = getReadingPosition(spread, selectedCards.length)
   const positionTitle = isComplete
     ? '선택 완료'
-    : nextPosition?.title ?? `${selectedCards.length + 1}번째 카드`
+    : nextPosition.title
   const positionDescription = isComplete
     ? '선택한 카드들을 공개할 준비가 되었습니다.'
-    : nextPosition?.description ?? '이 순서에 놓일 카드를 선택하세요.'
+    : nextPosition.description
 
   return (
     <main className="app-shell selection-screen">
       <header className="screen-header selection-header">
         <div>
-          <p className="section-index">The Draw</p>
+          <p className="section-index">카드 선택</p>
           <h1>카드를 선택하세요</h1>
           {question && <p className="active-question">“{question}”</p>}
         </div>
@@ -50,7 +51,7 @@ export function SelectionScreen({
       </header>
 
       <section className="position-guide" aria-live="polite">
-        <p>{isComplete ? 'Ready' : `Card ${selectedCards.length + 1}`}</p>
+        <p>{isComplete ? '공개 준비 완료' : `${selectedCards.length + 1} / ${drawCount}`}</p>
         <h2>{positionTitle}</h2>
         <span>{positionDescription}</span>
       </section>

@@ -16,6 +16,7 @@ const MAX_DRAW_COUNT = 78
 const DRAW_COUNT_ERROR = '1장부터 78장까지 정수로 선택할 수 있습니다.'
 
 type ReadingStage = 'setup' | 'selecting' | 'revealed'
+export type DrawCountMode = 'recommended' | 'custom'
 
 function App() {
   const [stage, setStage] = useState<ReadingStage>('setup')
@@ -24,6 +25,7 @@ function App() {
   const [selectedSpreadId, setSelectedSpreadId] = useState('one-card-message')
   const [activeSpread, setActiveSpread] = useState<TarotSpread | null>(null)
   const [drawCount, setDrawCount] = useState(3)
+  const [drawCountMode, setDrawCountMode] = useState<DrawCountMode>('recommended')
   const [drawCountInput, setDrawCountInput] = useState('3')
   const [validationMessage, setValidationMessage] = useState('')
   const [includeReversed, setIncludeReversed] = useState(true)
@@ -62,12 +64,19 @@ function App() {
     setValidationMessage('')
     const recommended = getRecommendedSpreads(nextCategory)
     setSelectedSpreadId(recommended[0]?.id ?? '')
+    setDrawCountMode(nextCategory === 'free' ? 'custom' : 'recommended')
+    if (nextCategory !== 'free' && recommended[0]) {
+      setDrawCount(recommended[0].cardCount)
+      setDrawCountInput(String(recommended[0].cardCount))
+    }
   }
 
   const startReading = () => {
     const spread = tarotSpreads.find((item) => item.id === selectedSpreadId)
     const nextDrawCount =
-      category === 'free' ? commitDrawCount(drawCountInput) : spread?.cardCount
+      category === 'free' || drawCountMode === 'custom'
+        ? commitDrawCount(drawCountInput)
+        : spread?.cardCount
 
     if (nextDrawCount === null || nextDrawCount === undefined) return
 
@@ -134,6 +143,7 @@ function App() {
     setSelectedSpreadId('one-card-message')
     setActiveSpread(null)
     setDrawCount(3)
+    setDrawCountMode('recommended')
     setDrawCountInput('3')
     setValidationMessage('')
     setIncludeReversed(true)
@@ -177,6 +187,7 @@ function App() {
       category={category}
       question={question}
       selectedSpreadId={selectedSpreadId}
+      drawCountMode={drawCountMode}
       presets={DRAW_COUNT_PRESETS}
       drawCount={drawCount}
       drawCountInput={drawCountInput}
@@ -186,8 +197,27 @@ function App() {
       includeReversed={includeReversed}
       onCategoryChange={changeCategory}
       onQuestionChange={setQuestion}
-      onSpreadChange={setSelectedSpreadId}
+      onSpreadChange={(spreadId) => {
+        setSelectedSpreadId(spreadId)
+        const spread = tarotSpreads.find((item) => item.id === spreadId)
+        if (drawCountMode === 'recommended' && spread) {
+          setDrawCount(spread.cardCount)
+          setDrawCountInput(String(spread.cardCount))
+        }
+      }}
+      onDrawCountModeChange={(mode) => {
+        setDrawCountMode(mode)
+        setValidationMessage('')
+        if (mode === 'recommended') {
+          const spread = tarotSpreads.find((item) => item.id === selectedSpreadId)
+          if (spread) {
+            setDrawCount(spread.cardCount)
+            setDrawCountInput(String(spread.cardCount))
+          }
+        }
+      }}
       onPresetSelect={(preset) => {
+        setDrawCountMode('custom')
         setDrawCount(preset)
         setDrawCountInput(String(preset))
         setValidationMessage('')

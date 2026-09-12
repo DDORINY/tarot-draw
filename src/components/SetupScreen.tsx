@@ -1,10 +1,12 @@
 import { getRecommendedSpreads, readingCategories } from '../data/readingGuides'
 import type { ReadingCategory } from '../types/reading'
+import type { DrawCountMode } from '../App'
 
 interface SetupScreenProps {
   category: ReadingCategory
   question: string
   selectedSpreadId: string
+  drawCountMode: DrawCountMode
   presets: readonly number[]
   drawCount: number
   drawCountInput: string
@@ -15,6 +17,7 @@ interface SetupScreenProps {
   onCategoryChange: (category: ReadingCategory) => void
   onQuestionChange: (question: string) => void
   onSpreadChange: (spreadId: string) => void
+  onDrawCountModeChange: (mode: DrawCountMode) => void
   onPresetSelect: (preset: number) => void
   onInputChange: (value: string) => void
   onInputCommit: () => void
@@ -31,13 +34,13 @@ export function SetupScreen(props: SetupScreenProps) {
     <main className="app-shell guided-setup">
       <header className="brand-lockup guided-brand">
         <span className="brand-rule" aria-hidden="true" />
-        <p>Midnight Observatory</p>
+        <p>한밤의 관측소</p>
         <h1>TAROT DRAW</h1>
       </header>
 
       <div className="guided-layout">
         <section className="guide-section category-section" aria-labelledby="category-title">
-          <p className="section-index">01 · Theme</p>
+          <p className="section-index">01 · 주제</p>
           <h2 id="category-title">무엇이 궁금한가요?</h2>
           <div className="category-grid">
             {readingCategories.map((item) => (
@@ -56,7 +59,7 @@ export function SetupScreen(props: SetupScreenProps) {
         </section>
 
         <section className="guide-section question-section" aria-labelledby="question-title">
-          <p className="section-index">02 · Question</p>
+          <p className="section-index">02 · 질문</p>
           <h2 id="question-title">질문을 정해 보세요</h2>
           {!isFreeReading && (
             <div className="question-suggestions">
@@ -94,34 +97,37 @@ export function SetupScreen(props: SetupScreenProps) {
         </section>
 
         <section className="guide-section spread-section" aria-labelledby="spread-title">
-          <p className="section-index">03 · Spread</p>
-          <h2 id="spread-title">{isFreeReading ? '자유 리딩' : '스프레드를 선택하세요'}</h2>
+          <p className="section-index">03 · 카드 배열</p>
+          <h2 id="spread-title">{isFreeReading ? '자유 리딩' : '카드 배열을 선택하세요'}</h2>
 
           {isFreeReading ? (
-            <FreeDrawControls {...props} />
+            <DrawCountControls {...props} isFreeReading />
           ) : (
-            <div className="spread-list">
-              {recommendedSpreads.map((spread) => (
-                <button
-                  key={spread.id}
-                  type="button"
-                  className="spread-option"
-                  aria-pressed={props.selectedSpreadId === spread.id}
-                  onClick={() => props.onSpreadChange(spread.id)}
-                >
-                  <span className="spread-heading">
-                    <strong>{spread.name}</strong>
-                    <small>{spread.cardCount}장 · {spread.difficulty === 'beginner' ? '초보자 추천' : '심층'}</small>
-                  </span>
-                  <span>{spread.description}</span>
-                  <ol>
-                    {spread.positions.map((position) => (
-                      <li key={position.title}>{position.title}</li>
-                    ))}
-                  </ol>
-                </button>
-              ))}
-            </div>
+            <>
+              <div className="spread-list">
+                {recommendedSpreads.map((spread) => (
+                  <button
+                    key={spread.id}
+                    type="button"
+                    className="spread-option"
+                    aria-pressed={props.selectedSpreadId === spread.id}
+                    onClick={() => props.onSpreadChange(spread.id)}
+                  >
+                    <span className="spread-heading">
+                      <strong>{spread.name}</strong>
+                      <small>{spread.cardCount}장 · {spread.difficulty === 'beginner' ? '초보자 추천' : '심층'}</small>
+                    </span>
+                    <span>{spread.description}</span>
+                    <ol>
+                      {spread.positions.map((position) => (
+                        <li key={position.title}>{position.title}</li>
+                      ))}
+                    </ol>
+                  </button>
+                ))}
+              </div>
+              <DrawCountControls {...props} />
+            </>
           )}
         </section>
 
@@ -133,7 +139,7 @@ export function SetupScreen(props: SetupScreenProps) {
               checked={props.includeReversed}
               onChange={(event) => props.onReversedChange(event.target.checked)}
             />
-            <span className="toggle-track" aria-hidden="true"><span>{props.includeReversed ? 'ON' : 'OFF'}</span><i /></span>
+            <span className="toggle-track" aria-hidden="true"><span>{props.includeReversed ? '포함' : '미포함'}</span><i /></span>
           </label>
           <button type="button" className="primary-button" onClick={props.onStart}>
             리딩 시작 <span aria-hidden="true">→</span>
@@ -144,33 +150,52 @@ export function SetupScreen(props: SetupScreenProps) {
   )
 }
 
-function FreeDrawControls(props: SetupScreenProps) {
+function DrawCountControls(props: SetupScreenProps & { isFreeReading?: boolean }) {
+  const selectedSpread = getRecommendedSpreads(props.category)
+    .find((spread) => spread.id === props.selectedSpreadId)
+  const isCustom = props.isFreeReading || props.drawCountMode === 'custom'
+
   return (
-    <div className="free-draw-controls">
-      <p>정해진 포지션 없이 1장에서 78장까지 자유롭게 선택합니다.</p>
-      <div className="preset-list">
-        {props.presets.map((preset) => (
-          <button key={preset} type="button" className="preset-button" aria-pressed={props.drawCount === preset} onClick={() => props.onPresetSelect(preset)}>
-            {String(preset).padStart(2, '0')}
+    <div className="draw-count-panel">
+      <h3>카드 장수</h3>
+      {!props.isFreeReading && (
+        <div className="draw-count-modes" role="radiogroup" aria-label="카드 장수 선택 방식">
+          <button type="button" role="radio" aria-checked={props.drawCountMode === 'recommended'} onClick={() => props.onDrawCountModeChange('recommended')}>
+            <strong>추천 장수 사용</strong>
+            <span>{selectedSpread ? `${selectedSpread.name} · ${selectedSpread.cardCount}장` : '카드 배열을 선택하세요.'}</span>
           </button>
-        ))}
+          <button type="button" role="radio" aria-checked={props.drawCountMode === 'custom'} onClick={() => props.onDrawCountModeChange('custom')}>
+            <strong>직접 선택</strong>
+            <span>1장에서 78장까지 선택할 수 있습니다.</span>
+          </button>
+        </div>
+      )}
+      {props.isFreeReading && <p>정해진 위치 없이 1장에서 78장까지 자유롭게 선택합니다.</p>}
+      <div className="custom-count-controls" hidden={!isCustom}>
+        <div className="preset-list">
+          {props.presets.map((preset) => (
+            <button key={preset} type="button" className="preset-button" aria-pressed={props.drawCount === preset} onClick={() => props.onPresetSelect(preset)}>
+              {String(preset).padStart(2, '0')}
+            </button>
+          ))}
+        </div>
+        <label className="question-input free-count-input">
+          <span>직접 장수 입력</span>
+          <input
+            type="number"
+            min={props.minDrawCount}
+            max={props.maxDrawCount}
+            step={1}
+            value={props.drawCountInput}
+            aria-invalid={props.validationMessage !== ''}
+            aria-describedby="draw-count-error"
+            onChange={(event) => props.onInputChange(event.target.value)}
+            onBlur={props.onInputCommit}
+            onKeyDown={(event) => { if (event.key === 'Enter') props.onInputCommit() }}
+          />
+        </label>
+        <p id="draw-count-error" className="field-error" role="alert">{props.validationMessage}</p>
       </div>
-      <label className="question-input free-count-input">
-        <span>직접 장수 입력</span>
-        <input
-          type="number"
-          min={props.minDrawCount}
-          max={props.maxDrawCount}
-          step={1}
-          value={props.drawCountInput}
-          aria-invalid={props.validationMessage !== ''}
-          aria-describedby="free-count-error"
-          onChange={(event) => props.onInputChange(event.target.value)}
-          onBlur={props.onInputCommit}
-          onKeyDown={(event) => { if (event.key === 'Enter') props.onInputCommit() }}
-        />
-      </label>
-      <p id="free-count-error" className="field-error" role="alert">{props.validationMessage}</p>
     </div>
   )
 }
